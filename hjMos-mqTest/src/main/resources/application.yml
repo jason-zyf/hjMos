@@ -1,0 +1,79 @@
+server:
+  port: 8089
+  servlet:
+    context-path: /mq
+    session:
+      timeout: 30
+
+#  rocketmq 相关配置
+#rocketmq:
+#  # 指定namesrv地址
+#  namesrvAddr: 192.168.236.135:9876;192.168.236.136:9876
+#  #生产者group名称
+#  producerGroupName: producerGroupName
+#  #事务生产者group名称
+#  transactionProducerGroupName: order
+#  #生产者实例名称
+#  producerInstanceName: user_producer_instance
+#  #事务生产者实例名称
+#  producerTraninstanceName: user_producer_transacition
+#  #启动的时候是否消费历史记录
+#  enableHistoryConsumer: false
+#  #消费者集合
+#  consumerList:
+#  - name: CCTV
+#    enable: true
+#    groupName: CCTV
+#    topic: my-topic
+#    tags: my-topic
+#    # 指定namesrv地址
+#    namesrvAddr: 192.168.236.135:9876;192.168.236.136:9876
+#    #广播消费
+#    consumerBroadCasting: false
+#    #一次最大消费多少数量消息
+#    consumerBatchMaxSize: 1
+#    #启动顺序消费
+#    enableOrderConsumer: false
+#  - name: ORDER
+#    enable: true
+#    groupName: ORDER
+#    topic: orderTopic
+#    tags: aa
+#    # 指定namesrv地址
+#    namesrvAddr: 192.168.236.135:9876;192.168.236.136:9876
+#    #广播消费
+#    consumerBroadCasting: false
+#    #一次最大消费多少数量消息
+#    consumerBatchMaxSize: 1
+#    #启动顺序消费
+#    enableOrderConsumer: false
+
+# kafka 相关设置
+spring:
+  outkafka:
+    producer:
+      retries: 0
+
+  skafka:
+    # 指定kafka 代理地址，可以多个
+    # 172.23.122.211:9092,172.23.122.211:9093,172.23.122.211:9094
+    bootstrap-servers: 192.168.236.135:9092;192.168.236.135:9093;192.168.236.135:9094
+    #生产者
+    producer:
+      retries: 0
+      # 每次批量发送消息的数量
+      #      batch-size: 16384
+      #      buffer-memory: 33554432
+      # 指定消息key和消息体的编解码方式
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: -1
+    #消费者
+    consumer:
+      group-id: user
+      enable-auto-commit: true
+      auto-commit-interval: 1000
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+

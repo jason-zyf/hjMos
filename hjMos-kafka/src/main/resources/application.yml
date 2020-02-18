@@ -1,0 +1,34 @@
+server:
+  port: 8076
+  servlet:
+    # context-path: /kafka
+    session:
+      timeout: 30
+
+
+spring:
+  outkafka:
+    producer:
+      retries: 0
+
+  skafka:
+    # 指定kafka 代理地址，可以多个
+    # 172.23.122.211:9092,172.23.122.211:9093,172.23.122.211:9094
+    bootstrap-servers: 192.168.236.135:9092;192.168.236.135:9093;192.168.236.135:9094
+    #生产者
+    producer:
+      retries: 0
+      # 每次批量发送消息的数量
+      #      batch-size: 16384
+      #      buffer-memory: 33554432
+      # 指定消息key和消息体的编解码方式
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: -1
+    #消费者
+    consumer:
+      group-id: user
+      enable-auto-commit: true
+      auto-commit-interval: 1000
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
