@@ -1,5 +1,8 @@
 package com.pci.hjmos.mq.config;
 
+import com.pci.hjmos.mq.util.properties.KafkaProperties;
+import com.sun.media.jfxmedia.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -22,14 +25,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
+@Slf4j
 public class KafkaConfiguration {
 
-    @Value("${spring.skafka.bootstrap-servers}")
-    private String innerServers;
-    @Value("${spring.skafka.consumer.group-id}")
-    private String innerGroupid;
-    @Value("${spring.skafka.consumer.enable-auto-commit}")
-    private String innerEnableAutoCommit;
+    // 原来的方式
+//    @Value("${spring.skafka.bootstrap-servers}")
+//    private String innerServers;
+//    @Value("${spring.skafka.consumer.group-id}")
+//    private String innerGroupid;
+//    @Value("${spring.skafka.consumer.enable-auto-commit}")
+//    private String innerEnableAutoCommit;
+
+    // 使用对象的方式
+    @Autowired
+    private KafkaProperties kafkaProperties;
     /**
      * 事件监听
      */
@@ -54,6 +63,13 @@ public class KafkaConfiguration {
     @Bean
     public Map<String, Object> consumerConfigs() {
         Map<String, Object> props = new HashMap<>();
+        if(kafkaProperties.getBootstrapServers() == null){
+            return null;
+        }
+        String innerServers = kafkaProperties.getBootstrapServers();
+        String innerGroupid = (String) kafkaProperties.getConsumer().get("group-id");
+        boolean innerEnableAutoCommit = (boolean) kafkaProperties.getConsumer().get("enable-auto-commit");
+
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, innerServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, innerGroupid);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, innerEnableAutoCommit);
@@ -82,6 +98,14 @@ public class KafkaConfiguration {
     @Bean
     public Map<String, Object> consumerConfigs2() {
         Map<String, Object> props = new HashMap<>();
+
+        if(kafkaProperties.getBootstrapServers() == null){
+            return null;
+        }
+        String innerServers = kafkaProperties.getBootstrapServers();
+        String innerGroupid = (String) kafkaProperties.getConsumer().get("group-id");
+        boolean innerEnableAutoCommit = (boolean) kafkaProperties.getConsumer().get("enable-auto-commit");
+
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, innerServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, innerGroupid);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, innerEnableAutoCommit);
@@ -105,6 +129,12 @@ public class KafkaConfiguration {
     @Bean
     public Map<String, Object> consumerConfigs3() {
         Map<String, Object> props = new HashMap<>();
+        if(kafkaProperties.getBootstrapServers() == null){
+            return null;
+        }
+        String innerServers = kafkaProperties.getBootstrapServers();
+        String innerGroupid = (String) kafkaProperties.getConsumer().get("group-id");
+
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, innerServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, innerGroupid);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
@@ -128,27 +158,36 @@ public class KafkaConfiguration {
         return factory;
     }
     //------------------------------------------- 生产者配置  -------------------------------------------
-    private Map<String, Object> senderProps() {
-        Map<String, Object> props = new HashMap<>();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, innerServers);
-        props.put(ProducerConfig.RETRIES_CONFIG, 0);
-        props.put(ProducerConfig.ACKS_CONFIG, "1");    // 必须设置为字符串格式
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        return props;
-    }
-    @Bean
-    public ProducerFactory<String, String> producerFactory() {
-        return new DefaultKafkaProducerFactory<>(senderProps());
-    }
-
-    @Bean //kafka发送消息模板
-    public KafkaTemplate<String, String> kafkaTemplate() {
-        return new KafkaTemplate<String, String>(producerFactory());
-    }
-
-    @Bean //kafka生产者
-    public Producer<String, String> producer() {
-        return new KafkaProducer<String, String>(senderProps());
-    }
+//    private Map<String, Object> senderProps() {
+//        Map<String, Object> props = new HashMap<>();
+//
+//        String innerServers = kafkaProperties.getBootstrapServers();
+//        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, innerServers);
+//        props.put(ProducerConfig.RETRIES_CONFIG, 0);
+//        props.put(ProducerConfig.ACKS_CONFIG, "1");    // 必须设置为字符串格式
+//        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+//        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+//        return props;
+//    }
+//    @Bean
+//    public ProducerFactory<String, String> producerFactory() {
+//        return new DefaultKafkaProducerFactory<>(senderProps());
+//    }
+//
+//    @Bean //kafka发送消息模板
+//    public KafkaTemplate<String, String> kafkaTemplate() {
+//        return new KafkaTemplate<String, String>(producerFactory());
+//    }
+//
+//    @Bean //kafka生产者
+//    public Producer<String, String> producer() {
+//
+//        if(kafkaProperties.getBootstrapServers() == null){
+//            // 说明没有配置kafka信息
+//            Map<String, Object> prop = null;
+//            return new KafkaProducer<String, String>(prop);
+//        }
+//
+//        return new KafkaProducer<String, String>(senderProps());
+//    }
 }
