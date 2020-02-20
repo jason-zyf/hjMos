@@ -10,6 +10,7 @@ import com.pci.hjmos.springbootkafka.service.MQCallback;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @Service
 @Slf4j
@@ -57,9 +59,21 @@ public class KafkaProduceMessageServiceImpl implements KafkaProduceMessageServic
     @Override
     public Result sendSyncMsg(String topic, String content) throws Exception {
         ResultData data ;
+
+        // 第一种使用kafkaProducer的方式
+        ProducerRecord<String, String> record = new ProducerRecord<>(topic,"Kafka-demo-001", content);
+        Future<RecordMetadata> sendp = producer.send(record);
+        System.out.println("send" + sendp);
+        System.out.println("offset:" + sendp.get().offset());
+        System.out.println("hasOffset:" + sendp.get().hasOffset());
+
+        // 第二种使用kafkaTemplate发送的方式
         ListenableFuture<SendResult<String, String>> send = kafkaTemplate.send(topic, content);
         System.out.println("发送的kafka地址为："+bootstrapServers);
+        System.out.println("回显："+send);
+        System.out.println("回显："+send.get());
         data = new ResultData(topic, content,send.get().getProducerRecord().toString());
+
         return new Result(CodeConstant.RETCODE_200, MsgConstant.SUCCESS,data);
     }
 
