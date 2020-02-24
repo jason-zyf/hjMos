@@ -18,6 +18,7 @@ import org.apache.rocketmq.client.producer.TransactionMQProducer;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -40,14 +41,14 @@ public class RocketMqProduceConfiguration {
     private RocketMQProperties rocketMQProperties;
 
     /**
-     * 事件监听
+     * 事件监听,消费者端参数先注释掉
      */
-    @Autowired
+   /* @Autowired
     private ApplicationEventPublisher publisher = null;
 
     private static boolean isFirstSub = true;
 
-    private static long startTime = System.currentTimeMillis();
+    private static long startTime = System.currentTimeMillis();*/
 
     /**
      * 容器初始化的时候 打印参数
@@ -63,8 +64,8 @@ public class RocketMqProduceConfiguration {
      * @throws MQClientException
      */
     @Bean
+    @ConditionalOnExpression("${mq.enabled}==1&&${mq.rocketmq.enabled}==1")
     public DefaultMQProducer defaultProducer() throws MQClientException {
-        System.out.println("rocketMQProperties --> " + rocketMQProperties);
         if(rocketMQProperties.getNamesrvAddr() == null){
             return new DefaultMQProducer();
         }
