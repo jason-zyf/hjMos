@@ -7,6 +7,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -36,22 +37,25 @@ public class KafkaProduceConfiguration {
         return props;
     }
     @Bean
+    @ConditionalOnExpression("${mq.enabled}==1&&${mq.kafka.enabled}==1")
     public ProducerFactory<String, String> producerFactory() {
         return new DefaultKafkaProducerFactory<>(senderProps());
     }
 
     @Bean //kafka发送消息模板
+    @ConditionalOnExpression("${mq.enabled}==1&&${mq.kafka.enabled}==1")
     public KafkaTemplate<String, String> kafkaTemplate() {
         return new KafkaTemplate<String, String>(producerFactory());
     }
 
     @Bean //kafka生产者
+    @ConditionalOnExpression("${mq.enabled}==1&&${mq.kafka.enabled}==1")
     public Producer<String, String> producer() {
-
+        log.info("初始化kafka生产者........");
         if(kafkaProperties.getBootstrapServers() == null){
             // 说明没有配置kafka信息
-            Map<String, Object> prop = null;
-            return new KafkaProducer<String, String>(prop);
+            Map<String, Object> props = new HashMap<>();
+            return new KafkaProducer<String, String>(props);
         }
 
         return new KafkaProducer<String, String>(senderProps());
