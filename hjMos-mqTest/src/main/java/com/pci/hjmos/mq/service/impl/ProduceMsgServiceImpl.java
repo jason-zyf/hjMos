@@ -1,6 +1,7 @@
 package com.pci.hjmos.mq.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.pci.hjmos.mq.service.MQCallback;
 import com.pci.hjmos.mq.service.ProduceMsgService;
 import com.pci.hjmos.mq.util.constant.CodeConstant;
 import com.pci.hjmos.mq.util.constant.MsgConstant;
@@ -37,8 +38,8 @@ public class ProduceMsgServiceImpl implements ProduceMsgService {
     @Autowired
     private Producer<String, String> kafkaProducer;
 
-    @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
+//    @Autowired
+//    private KafkaTemplate<String, String> kafkaTemplate;
 
     // 直接从配置文件中获取
 //    @Value("${rocketmq.namesrvAddr}")
@@ -77,6 +78,51 @@ public class ProduceMsgServiceImpl implements ProduceMsgService {
             return new Result(CodeConstant.RETCODE_200, MsgConstant.SUCCESS,data);
         }catch (Exception e){
             return new Result(CodeConstant.RETCODE_500, MsgConstant.ERROR,data);
+        }
+    }
+
+    /**
+     * 发送异步消息
+     * @param topic 消息主题
+     * @param content 消息内容
+     * @param callback 回调方法对象
+     * @throws Exception
+     */
+    @Override
+    public void sendAsyncMsg(String topic, String content, MQCallback callback) throws Exception {
+        try {
+            String namesrvAddr = rocketMqProperties.getNamesrvAddr();
+            if(!StringUtils.isEmpty(namesrvAddr)){
+                // 说明有配置rocketmq,则发送消息到rocketmq中
+                Message msg = new Message(topic, topic, content.getBytes());
+                rocketMqProducer.send(msg,callback);
+                log.info("发送一条异步消息到rocketmq");
+            }else {
+                ProducerRecord producerRecord = new ProducerRecord(topic, content);
+                kafkaProducer.send(producerRecord,callback);
+                log.info("发送一条异步消息到kafka");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void sendOneWayMsg(String topic, String content) {
+        try {
+            String namesrvAddr = rocketMqProperties.getNamesrvAddr();
+            if(!StringUtils.isEmpty(namesrvAddr)){
+                // 说明有配置rocketmq,则发送消息到rocketmq中
+                Message msg = new Message(topic, topic, content.getBytes());
+                rocketMqProducer.sendOneway(msg);
+                log.info("发送一条单向消息到rocketmq");
+            }else {
+                ProducerRecord producerRecord = new ProducerRecord(topic, content);
+                kafkaProducer.send(producerRecord);
+                log.info("发送一条单向消息到kafka");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
