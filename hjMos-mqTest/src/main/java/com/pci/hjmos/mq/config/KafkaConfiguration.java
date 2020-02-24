@@ -161,6 +161,9 @@ public class KafkaConfiguration {
 //    private Map<String, Object> senderProps() {
 //        Map<String, Object> props = new HashMap<>();
 //
+//        if(kafkaProperties.getBootstrapServers() == null){
+//            return null;
+//        }
 //        String innerServers = kafkaProperties.getBootstrapServers();
 //        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, innerServers);
 //        props.put(ProducerConfig.RETRIES_CONFIG, 0);
