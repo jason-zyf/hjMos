@@ -1,6 +1,6 @@
 package com.pci.hjmos.redis.api.redis;
 
-import com.pci.hjmos.redis.utils.JsonUtils;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
@@ -45,7 +45,8 @@ public class DefaultSerializer implements RedisSerializer<Object> {
                     return str.getBytes(charset);
                 }
 
-                String jsonString = JsonUtils.toJsonStr(object);
+//                String jsonString = JsonUtils.toJsonStr(object);
+                String jsonString = JSONObject.toJSONString(object);
 
                 return (jsonString == null ? EMPTY_ARRAY : jsonString.getBytes(charset));
             } catch (Exception ex) {
