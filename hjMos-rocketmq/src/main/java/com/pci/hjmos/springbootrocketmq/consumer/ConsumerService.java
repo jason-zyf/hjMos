@@ -24,6 +24,19 @@ public class ConsumerService {
         }
     }
 
+    @EventListener(condition = "#event.msgs[0].topic=='pci'")
+    public void rocketmqMsgListener3(MessageEvent event) {
+        try {
+            List<MessageExt> msgs = event.getMsgs();
+            for (MessageExt msg : msgs) {
+//                System.err.println("线程："+Thread.currentThread().getName()+"，消费主题"+msg.getTopic()+"消息:"+new String(msg.getBody())+ "--ID："+msg.getMsgId());
+                System.out.println("接受rocketmq到消息："+ new String(msg.getBody()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @EventListener(condition = "#event.msgs[0].topic=='orderTopic'")
     public void receiveOrderMessage(MessageEvent event){
 

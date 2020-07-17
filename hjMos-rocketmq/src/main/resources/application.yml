@@ -8,7 +8,7 @@ server:
 #  rocketmq 相关配置
 rocketmq:
   # 指定namesrv地址
-  namesrvAddr: 192.168.236.135:9876
+  namesrvAddr: 192.168.236.137:9876;192.168.236.136:9876
   #生产者group名称
   producerGroupName: producerGroupName
   #事务生产者group名称
@@ -24,23 +24,23 @@ rocketmq:
   - name: CCTV
     enable: true
     groupName: CCTV
-    topic: my-topic
-    tags: aa
+    topic: pci
+    tags: pci
     # 指定namesrv地址
-    namesrvAddr: 192.168.236.135:9876
+    namesrvAddr: 192.168.236.137:9876;192.168.236.136:9876
     #广播消费
     consumerBroadCasting: false
     #一次最大消费多少数量消息
     consumerBatchMaxSize: 1
     #启动顺序消费
     enableOrderConsumer: false
-  - name: ORDER
+  - name: LOG
     enable: true
-    groupName: ORDER
-    topic: orderTopic
-    tags: aa
+    groupName: LOG
+    topic: log
+    tags: log
     # 指定namesrv地址
-    namesrvAddr: 192.168.236.135:9876
+    namesrvAddr: 192.168.236.137:9876;192.168.236.136:9876
     #广播消费
     consumerBroadCasting: false
     #一次最大消费多少数量消息

@@ -24,6 +24,16 @@ public class KafkaReceiver {
         }
     }
 
+    @KafkaListener(topics = {"log"},groupId = "user")
+    public void listenLog(ConsumerRecord<?, ?> record){
+        Optional<?> kafkaMessage = Optional.ofNullable(record.value());
+        if (kafkaMessage.isPresent()) {
+            Object message = kafkaMessage.get();
+            log.info("线程="+Thread.currentThread()+"->user组 kafka消费主题【"+record.topic()
+                    +" 分区："+record.partition()+ "】"+"record =" + record+"+ message =" + message);
+        }
+    }
+
 
     //------------------- 批量消费+监听分区消费 -------------------
     @KafkaListener(id = "batch",clientIdPrefix = "batch",containerFactory = "batchContainerFactory",topicPartitions = {
